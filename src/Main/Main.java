@@ -32,7 +32,7 @@ import net.miginfocom.swing.MigLayout;
 import ui.fFrame;
 import debug.debug;
 
-public class Main implements ActionListener{
+public class Main implements ActionListener, TableModelListener{
 
 	// Graphic Components
 	customFont Notera = new customFont("Notera", Font.PLAIN, 32);
@@ -159,16 +159,8 @@ public class Main implements ActionListener{
 		}
 		tbl=new JTable(DV,columnNames);
 
-		//Test of event lister
-		tbl.getModel().addTableModelListener(new TableModelListener() { //TODO: Move to button-listener like construct
-
-			public void tableChanged(TableModelEvent e) {
-				//System.out.println(e);
-				debug.notify("at row: "+e.getFirstRow()+", Column:"+ e.getColumn()+", UPDATE:"+DV[e.getFirstRow()][e.getColumn()]);
-				
-				//TODO: Create query or abstraction method to update data
-			}
-		});
+		//Add table event listener
+		tbl.getModel().addTableModelListener(this);
 
 		panel.add(tbl);
 		return panel;
@@ -273,6 +265,17 @@ public class Main implements ActionListener{
 			setLayout("tableView");
 		}
 
+	}
+	
+	/////////////////////////////////////////////////////
+	//             TABLE CHANGE LISTENER               //
+	/////////////////////////////////////////////////////
+	@Override
+	public void tableChanged(TableModelEvent e) {
+		//debug.notify("at row: "+e.getFirstRow()+", Column:"+ e.getColumn()+", UPDATE:"+DV[e.getFirstRow()][e.getColumn()]);
+		debug.notify("at row: "+e.getFirstRow()+", Column:"+ e.getColumn());
+
+		//TODO: Create query or abstraction method to update data	
 	}
 
 	/////////////////////////////////////////////////////
