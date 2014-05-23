@@ -141,7 +141,7 @@ public class Main implements ActionListener, TableModelListener{
 	public JPanel tableView(fFrame frame){
 		JPanel panel = new JPanel();
 		//TODO: Create Abstraction method for loading data (possibly integrate with that of <169:17>)
-		
+
 		// Create columns names
 		String columnNames[] = { "ID", "Name", "Price" };
 
@@ -266,7 +266,7 @@ public class Main implements ActionListener, TableModelListener{
 		}
 
 	}
-	
+
 	/////////////////////////////////////////////////////
 	//             TABLE CHANGE LISTENER               //
 	/////////////////////////////////////////////////////
@@ -275,7 +275,31 @@ public class Main implements ActionListener, TableModelListener{
 		//debug.notify("at row: "+e.getFirstRow()+", Column:"+ e.getColumn()+", UPDATE:"+DV[e.getFirstRow()][e.getColumn()]);
 		debug.notify("at row: "+e.getFirstRow()+", Column:"+ e.getColumn());
 
-		//TODO: Create query or abstraction method to update data	
+		DB.query("products", DB.drop, e.getFirstRow()); //TEST CODE
+		tbl=drawTbl("products");
+		//TODO: Create query or abstraction method to update data
+
+		tbl.repaint(); //Reload data
+	}
+
+	public JTable drawTbl(String model){ //TODO: Move to DB helper class under DB.getTable(DB.QUERY());
+		// Create columns names
+		String columnNames[] = { "ID", "name", "price" };
+
+		// Load some data
+		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query(model, DB.find);
+		String DV[][] = new String[tmpData.entrySet().toArray().length][3]; //TODO: Create standard data model for active tables 
+		int i=0;
+
+		// Add data to table-data
+		for(Object c: tmpData.entrySet().toArray()){
+			DV[i][0]=Integer.toString(i);
+			DV[i][1]=tmpData.get(i).get(columnNames[1]);
+			DV[i][2]=tmpData.get(i).get(columnNames[2]);
+			i++;
+		}
+		tbl=new JTable(DV,columnNames);
+		return tbl;
 	}
 
 	/////////////////////////////////////////////////////
