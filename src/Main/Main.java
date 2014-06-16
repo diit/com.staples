@@ -5,7 +5,6 @@ import helper.customFont;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -14,10 +13,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,7 +28,7 @@ import javax.swing.event.TableModelListener;
 
 import net.miginfocom.swing.MigLayout;
 import ui.fFrame;
-import ui.ProductBtnUI;
+import ui.fTable;
 import debug.debug;
 
 public class Main implements ActionListener, TableModelListener{
@@ -56,7 +52,7 @@ public class Main implements ActionListener, TableModelListener{
 	int orderTotal=0;
 	ArrayList order = new ArrayList();
 	//--Table
-	JTable table;
+	fTable table = new fTable();
 
 	// Global Panel
 	String VIEW=null;
@@ -259,11 +255,27 @@ public class Main implements ActionListener, TableModelListener{
 		lblUsers.setHorizontalAlignment(JLabel.CENTER);
 		btnBack.setActionCommand("BACK");
 		btnBack.addActionListener(this);
-		String[] columnNames = {"ID","name","Password"};
-		Object[][] data = {};
-		table = new JTable(data, columnNames);
+
+		/////////// Table ///////////
+		String columnNames[] = { "ID", "Name", "Password" };
+
+		// Load some data
+		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query("users", DB.find);
+		final String DV[][] = new String[tmpData.entrySet().toArray().length][3];
+		int i=0;
+
+		// Add data to table-data
+		for(Object c: DB.query("users", DB.find).entrySet().toArray()){
+			DV[i][0]=Integer.toString(i);
+			DV[i][1]=tmpData.get(i).get("name");
+			DV[i][2]=tmpData.get(i).get("password");
+			i++;
+		}
+		table=new fTable(DV,columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(750, 380));
 		table.setFillsViewportHeight(true);
+		table.getModel().addTableModelListener(this);
+
 		JScrollPane scrollPane = new JScrollPane(table);
 		topPanel.add(lblUsers);
 		midPanel.add(scrollPane);
@@ -285,26 +297,27 @@ public class Main implements ActionListener, TableModelListener{
 		JButton btnBack = new JButton("BACK");
 		btnBack.setActionCommand("BACK");
 		btnBack.addActionListener(this);
-		String[] columnNames = {"First Name",
-				"Last Name",
-				"Age",
-				"Adress",
-		"Operation"};
-		Object[][] data = {
-				{"Kathy", "Smith",
-					"Snowboarding", new Integer(5), new Boolean(false)},
-					{"John", "Doe",
-						"Rowing", new Integer(3), new Boolean(true)},
-						{"Sue", "Black",
-							"Knitting", new Integer(2), new Boolean(false)},
-							{"Jane", "White",
-								"Speed reading", new Integer(20), new Boolean(true)},
-								{"Joe", "Brown",
-									"Pool", new Integer(10), new Boolean(false)}
-		};
-		table = new JTable(data, columnNames);
+
+		/////////// Table ///////////
+		String columnNames[] = { "ID", "Name", "Price" };
+
+		// Load some data
+		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query("products", DB.find);
+		final String DV[][] = new String[tmpData.entrySet().toArray().length][3];
+		int i=0;
+
+		// Add data to table-data
+		for(Object c: DB.query("products", DB.find).entrySet().toArray()){
+			DV[i][0]=Integer.toString(i);
+			DV[i][1]=tmpData.get(i).get("name");
+			DV[i][2]=tmpData.get(i).get("price");
+			i++;
+		}
+		table=new fTable(DV,columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(750, 380));
 		table.setFillsViewportHeight(true);
+		table.getModel().addTableModelListener(this);
+
 		JScrollPane scrollPane = new JScrollPane(table);
 		topPanel.add(lblProducts);
 		midPanel.add(scrollPane);
@@ -326,26 +339,27 @@ public class Main implements ActionListener, TableModelListener{
 		JButton btnBack = new JButton("BACK");
 		btnBack.setActionCommand("BACK");
 		btnBack.addActionListener(this);
-		String[] columnNames = {"First Name",
-				"Last Name",
-				"Age",
-				"Adress",
-		"Operation"};
-		Object[][] data = {
-				{"Kathy", "Smith",
-					"Snowboarding", new Integer(5), new Boolean(false)},
-					{"John", "Doe",
-						"Rowing", new Integer(3), new Boolean(true)},
-						{"Sue", "Black",
-							"Knitting", new Integer(2), new Boolean(false)},
-							{"Jane", "White",
-								"Speed reading", new Integer(20), new Boolean(true)},
-								{"Joe", "Brown",
-									"Pool", new Integer(10), new Boolean(false)}
-		};
-		table = new JTable(data, columnNames);
+
+		/////////// Table ///////////
+		String columnNames[] = { "ID", "UID", "PID" };
+
+		// Load some data
+		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query("sales", DB.find);
+		final String DV[][] = new String[tmpData.entrySet().toArray().length][3];
+		int i=0;
+
+		// Add data to table-data
+		for(Object c: DB.query("sales", DB.find).entrySet().toArray()){
+			DV[i][0]=Integer.toString(i);
+			DV[i][1]=tmpData.get(i).get("uid");
+			DV[i][2]=tmpData.get(i).get("pid");
+			i++;
+		}
+		table=new fTable(DV,columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(750, 380));
 		table.setFillsViewportHeight(true);
+		table.getModel().addTableModelListener(this);
+
 		JScrollPane scrollPane = new JScrollPane(table);
 		topPanel.add(lblOrders);
 		midPanel.add(scrollPane);
@@ -412,67 +426,12 @@ public class Main implements ActionListener, TableModelListener{
 
 	//Back-End Edit
 	public void loadUsers(){
-		// Create columns names
-		String columnNames[] = { "ID", "Name", "Password" };
 
-		// Load some data
-		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query("products", DB.find);
-		String DV[][] = new String[tmpData.entrySet().toArray().length][3];
-		int i=0;
-
-		// Add data to table-data
-		for(Object c: DB.query("users", DB.find).entrySet().toArray()){
-			DV[i][0]=Integer.toString(i);
-			DV[i][1]=tmpData.get(i).get("name");
-			DV[i][2]=tmpData.get(i).get("password");
-			i++;
-		}
-		table=new JTable(DV,columnNames);
-		//((Object) tbl).fireTableDataChanged();
-		table.repaint(); //Required to update data
-		table.revalidate();
-		debug.notify("TABEL LOAD COMPLETE");
 	}
 	public void loadProducts(){
-		// Create columns names
-		String columnNames[] = { "ID", "Name", "Price" };
-
-		// Load some data
-		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query("products", DB.find);
-		String DV[][] = new String[tmpData.entrySet().toArray().length][3];
-		int i=0;
-
-		// Add data to table-data
-		for(Object c: DB.query("products", DB.find).entrySet().toArray()){
-			DV[i][0]=Integer.toString(i);
-			DV[i][1]=tmpData.get(i).get("name");
-			DV[i][2]=tmpData.get(i).get("price");
-			i++;
-		}
-		table=new JTable(DV,columnNames);
-		//((Object) tbl).fireTableDataChanged();
-		table.repaint(); //Required to update data
 
 	}
 	public void loadSales(){
-		// Create columns names
-		String columnNames[] = { "ID", "UID", "PID" };
-
-		// Load some data
-		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query("products", DB.find);
-		String DV[][] = new String[tmpData.entrySet().toArray().length][3];
-		int i=0;
-
-		// Add data to table-data
-		for(Object c: DB.query("sales", DB.find).entrySet().toArray()){
-			DV[i][0]=Integer.toString(i);
-			DV[i][1]=tmpData.get(i).get("UID");
-			DV[i][2]=tmpData.get(i).get("PID");
-			i++;
-		}
-		table=new JTable(DV,columnNames);
-		//((Object) tbl).fireTableDataChanged();
-		table.repaint(); //Required to update data
 
 	}
 
@@ -514,89 +473,6 @@ public class Main implements ActionListener, TableModelListener{
 		}else if(cmd.equals("BACK")){
 			setView("adminView");
 		}
-
-		if(cmd.equals("next")){
-			//PRELIM TEST SUITE
-
-			//TEST:1 (insert) id=>0	
-
-			DB.query("products", DB.insert, 1 ,new LinkedHashMap<String, String>(){{
-				put("name", "scooter");
-				put("price", "9.00");
-			}});
-
-			DB.query("products", DB.insert, 2 ,new LinkedHashMap<String, String>(){{
-				put("name", "hat");
-				put("price", "58.00");
-			}});
-
-			//TEST:1 (findFirst) id=>0	
-			LinkedHashMap p1 = DB.query("products", DB.findFirst, 0);
-			LinkedHashMap p2 = DB.query("products", DB.findFirst, 1);
-			LinkedHashMap p3 = DB.query("products", DB.findFirst, 3);
-
-			//TEST:2 (drop) id=>1
-			DB.query("products", DB.drop, 1);
-
-			//TEST:3 (find)
-			queryResponse.append("============= PRODUCTS =============\n");
-			for(Object c: DB.query("products", DB.find).entrySet().toArray()){
-				if(!c.toString().contains("e=}")){
-					queryResponse.append(
-							c.toString()+"\n"
-							);
-				}
-			}
-
-			queryResponse.append("=============== USERS ===============\n");
-			for(Object c: DB.query("users", DB.find).entrySet().toArray()){
-				if(!c.toString().contains("e=}")){
-					queryResponse.append(
-							c.toString()+"\n"
-							);
-				}
-			}
-
-			queryResponse.append("=============== SALES ===============\n");
-			HashMap<Integer, LinkedHashMap<String, String>> sales = DB.query("sales", DB.find);
-			int count=0;
-			for(Object c: sales.entrySet().toArray()){
-				if(!c.toString().contains("e=}")){
-					queryResponse.append(
-							c.toString()+"\n"+
-									"PRODUCT: "+DB.query("products", DB.findFirst, Integer.parseInt(sales.get(count).get("pid"))).get("name")+"\n"+
-									"USER: "+DB.query("users", DB.findFirst, Integer.parseInt(sales.get(count).get("uid"))).get("name")+"\n"
-							);
-				}
-				count++;
-			}
-
-
-			setView("frontView");
-		}else if(cmd.equals("table")){
-			// TEST ENV:3
-			// Create columns names
-			String columnNames[] = { "ID", "Name", "Price" };
-
-			// Load some data
-			HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query("products", DB.find);
-			String DV[][] = new String[tmpData.entrySet().toArray().length][3];
-			int i=0;
-
-			// Add data to table-data
-			for(Object c: DB.query("products", DB.find).entrySet().toArray()){
-				DV[i][0]=Integer.toString(i);
-				DV[i][1]=tmpData.get(i).get("name");
-				DV[i][2]=tmpData.get(i).get("price");
-				i++;
-			}
-			tbl=new JTable(DV,columnNames);
-			//((Object) tbl).fireTableDataChanged();
-			tbl.repaint(); //Required to update data
-
-			setView("tableView");
-		}
-
 	}
 
 	/////////////////////////////////////////////////////
@@ -604,35 +480,7 @@ public class Main implements ActionListener, TableModelListener{
 	/////////////////////////////////////////////////////
 	@Override
 	public void tableChanged(TableModelEvent e) {
-		//debug.notify("at row: "+e.getFirstRow()+", Column:"+ e.getColumn()+", UPDATE:"+DV[e.getFirstRow()][e.getColumn()]);
-		debug.notify("at row: "+e.getFirstRow()+", Column:"+ e.getColumn());
-
-		DB.query("products", DB.drop, e.getFirstRow()); //TEST CODE
-		tbl=drawTbl("products");
-		//TODO: Create query or abstraction method to update data
-
-		tbl.repaint(); //Reload data
-	}
-
-	public JTable drawTbl(String model){ //TODO: Move to DB helper class under DB.getTable(DB.QUERY());
-		// Create columns names
-		String columnNames[] = { "ID", "name", "price" }; //TODO: Integrate with column name index in db (DB.getColumns(model);
-
-		// Load some data
-		HashMap<Integer, LinkedHashMap<String, String>> tmpData = DB.query(model, DB.find);
-		String DV[][] = new String[tmpData.entrySet().toArray().length][3]; //TODO: Create standard data model for active tables 
-		int i=0;
-
-		// Add data to table-data
-		for(Object c: tmpData.entrySet().toArray()){
-			DV[i][0]=Integer.toString(i);
-			DV[i][1]=tmpData.get(i).get(columnNames[1]);
-			DV[i][2]=tmpData.get(i).get(columnNames[2]);
-			i++;
-		}
-		tbl=new JTable(DV,columnNames);
-		tbl.repaint();
-		return tbl;
+		debug.notify("");
 	}
 
 	/////////////////////////////////////////////////////
