@@ -426,13 +426,61 @@ public class Main implements ActionListener, TableModelListener{
 
 	//Back-End Edit
 	public void loadUsers(){
+		/////////// Table ///////////
+		String columnNames[] = { "ID", "NAME", "PASSWORD" };
 
+		// Load some data
+		HashMap<Integer, LinkedHashMap<String, String>> DBR = DB.query("users", DB.find);
+		final String DV[][] = new String[DBR.entrySet().toArray().length][3];
+		int i=0;
+
+		// Add data to table-data
+		for(Object c: DBR.entrySet().toArray()){
+			DV[i][0]=Integer.toString(i);
+			DV[i][1]=DBR.get(i).get("name");
+			DV[i][2]=DBR.get(i).get("password");
+			i++;
+		}
+		table=new fTable(DV,columnNames);
+		table.repaint();
 	}
 	public void loadProducts(){
+		/////////// Table ///////////
+		String columnNames[] = { "ID", "NAME", "PASSWORD" };
 
+		// Load some data
+		HashMap<Integer, LinkedHashMap<String, String>> DBR = DB.query("products", DB.find);
+		final String DV[][] = new String[DBR.entrySet().toArray().length][3];
+		int i=0;
+
+		// Add data to table-data
+		for(Object c: DBR.entrySet().toArray()){
+			DV[i][0]=Integer.toString(i);
+			DV[i][1]=DBR.get(i).get("name");
+			DV[i][2]=DBR.get(i).get("password");
+			i++;
+		}
+		table=new fTable(DV,columnNames);
+		table.repaint();
 	}
 	public void loadSales(){
+		/////////// Table ///////////
+		String columnNames[] = { "ID", "UID", "PID" };
 
+		// Load some data
+		HashMap<Integer, LinkedHashMap<String, String>> salesDB = DB.query("sales", DB.find);
+		final String DV[][] = new String[salesDB.entrySet().toArray().length][3];
+		int i=0;
+
+		// Add data to table-data
+		for(Object c: salesDB.entrySet().toArray()){
+			DV[i][0]=Integer.toString(i);
+			DV[i][1]=salesDB.get(i).get("uid");
+			DV[i][2]=salesDB.get(i).get("pid");
+			i++;
+		}
+		table=new fTable(DV,columnNames);
+		table.repaint();
 	}
 
 	/////////////////////////////////////////////////////
