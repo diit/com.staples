@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -53,6 +54,10 @@ public class Main implements ActionListener, TableModelListener{
 	ArrayList order = new ArrayList();
 	//--Table
 	fTable table = new fTable();
+	//--products
+	JTextField title=new JTextField(10);
+	JTextField price=new JTextField(6);
+	JTextField id=new JTextField(6);
 
 	// Global Panel
 	String VIEW=null;
@@ -105,6 +110,8 @@ public class Main implements ActionListener, TableModelListener{
 		_global.add(usersView(frame), "usersView");
 		_global.add(productsView(frame), "productsView");
 		_global.add(salesView(frame), "salesView");
+		_global.add(addProductView(frame), "addProductView");
+		_global.add(dropProductView(frame), "dropProductView");
 
 		frame.add(_global);
 	}
@@ -318,10 +325,19 @@ public class Main implements ActionListener, TableModelListener{
 		table.setFillsViewportHeight(true);
 		table.getModel().addTableModelListener(this);
 
+		JPanel inner = new JPanel(new BorderLayout());
+		JButton add = new JButton("Add Product");
+		add.addActionListener(this);
+		JButton drop = new JButton("Delete Product");
+		drop.addActionListener(this);
+		inner.add(add, BorderLayout.WEST);
+		inner.add(btnBack, BorderLayout.CENTER);
+		inner.add(drop, BorderLayout.EAST);
+
 		JScrollPane scrollPane = new JScrollPane(table);
 		topPanel.add(lblProducts);
 		midPanel.add(scrollPane);
-		botPanel.add(btnBack);
+		botPanel.add(inner);
 		panel.add(topPanel,BorderLayout.PAGE_START);
 		panel.add(midPanel,BorderLayout.CENTER);
 		panel.add(botPanel,BorderLayout.PAGE_END);
@@ -368,6 +384,34 @@ public class Main implements ActionListener, TableModelListener{
 		panel.add(midPanel,BorderLayout.CENTER);
 		panel.add(botPanel,BorderLayout.PAGE_END);
 		return panel;
+	}
+
+	public JPanel addProductView(fFrame frame){
+		JPanel tp = new JPanel(new GridLayout(4,1));
+		JButton submit = new JButton("Submit");
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener(this);
+		submit.setActionCommand("addProduct");
+		submit.addActionListener(this);
+
+		tp.add(title);
+		tp.add(price);
+		tp.add(submit);
+		tp.add(cancel);
+		return tp;
+	}
+	public JPanel dropProductView(fFrame frame){
+		JPanel tp = new JPanel(new GridLayout(3,1));
+		JButton submit = new JButton("Submit");
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener(this);
+		submit.setActionCommand("dropProduct");
+		submit.addActionListener(this);
+
+		tp.add(id);
+		tp.add(submit);
+		tp.add(cancel);
+		return tp;
 	}
 
 	/////////////////////////////////////////////////////
@@ -518,6 +562,29 @@ public class Main implements ActionListener, TableModelListener{
 			}else if(cmd.equals("adminBACK")){
 				setView("frontView");
 			}
+		}else if(VIEW.equals("productsView")){
+			if(cmd.equals("Add Product")){
+				setView("addProductView");
+			}else if(cmd.equals("Delete Product")){
+				setView("dropProductView");
+			}
+		}else if(cmd.equals("addProduct")){/*
+			if(cmd.equals("Cancel")){
+				setView("productsView");
+			}else{
+				DB.query("products", DB.insert, DB.query("products", DB.find).size() ,new LinkedHashMap<String, String>(){{
+					put("name", title.getText());
+					put("price", price.getText());
+				}});
+				setView("productsView");
+			}*/
+		}else if(cmd.equals("dropProduct")){/*
+			if(cmd.equals("Cancel")){
+				setView("productsView");
+			}else if(){
+				DB.query("products", DB.drop, Integer.parseInt(id.getText()));
+				setView("productsView");
+			}*/
 		}else if(cmd.equals("BACK")){
 			setView("adminView");
 		}
@@ -528,7 +595,7 @@ public class Main implements ActionListener, TableModelListener{
 	/////////////////////////////////////////////////////
 	@Override
 	public void tableChanged(TableModelEvent e) {
-		debug.notify("");
+		debug.notify("updated");
 	}
 
 	/////////////////////////////////////////////////////
